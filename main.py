@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from espeak import espeak
+import subprocess
 import time
 import configuration
 import movement
@@ -11,11 +11,9 @@ def on_mqtt_connect(client, userdata, flags, rc):
 def on_mqtt_message(client, userdata, msg):
     print(msg.topic + ' ' + str(msg.payload))
     movement.turn_head()
-    time.sleep(1)
+    time.sleep(0.8)
     movement.speak(3)
-    espeak.synth(str(msg.payload))
-    while espeak.is_playing:
-        time.sleep(0.1)
+    subprocess.call(['espeak', msg.payload])
     time.sleep(0.2)
     movement.stop_all()
 
