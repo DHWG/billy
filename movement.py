@@ -1,7 +1,17 @@
 import threading
 import time
+import logging
 from configuration import PINS
-import RPi.GPIO as GPIO
+
+_log = logging.getLogger(__name__)
+
+on_pi = False
+try:
+    import RPi.GPIO as GPIO
+    _log.info('On PI, using real movement.')
+    on_pi = True
+except Exception as e:
+    _log.exception('Not on PI, simulating movement.')
 
 
 def wiggle_tail(frequency):
@@ -42,11 +52,11 @@ def stop_all():
     for pin in _pin_owners.keys():
         _acquire_owner_id(pin)
 
-
-GPIO.setmode(GPIO.BCM)  # set board mode to Broadcom
-
-for pin_name in ('head', 'mouth', 'tail'):
-    GPIO.setup(PINS[pin_name], GPIO.OUT)
+if on_pi:
+    GPIO.setmode(GPIO.BCM)  # set board mode to Broadcom
+    
+    for pin_name in ('head', 'mouth', 'tail'):
+        GPIO.setup(PINS[pin_name], GPIO.OUT)
 
 _pin_owners = {pin:0 for pin in PINS.values()}
 
@@ -108,4 +118,7 @@ def _switch(pin, on):
         The pin
     on : bool
         Switch pin on or off"""
-    GPIO.output(pin, GPIO.HIGH if on else GPIO.LOW)
+    if on_pi:
+        GPIO.output(pin, GPIO.HIGH if on else GPIO.LOW)
+    else:
+        _log.debug('Setting PIN {} to {}'.format(pin, on))
