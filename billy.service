@@ -1,0 +1,13 @@
+[Unit]
+Description=Billy Software
+After=network.target
+
+[Service]
+User=pi
+Type=simple
+WorkingDirectory=/home/pi/billy
+ExecStart=/usr/bin/python3 main.py
+Environment=GOOGLE_APPLICATION_CREDENTIALS=/home/pi/gcloud.json
+
+[Install]
+WantedBy=multi-user.target
