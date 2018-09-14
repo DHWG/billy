@@ -1,2 +1,2 @@
 google-cloud-texttospeech==0.2.*
-playsound==1.2.*
+pygame==1.9.*

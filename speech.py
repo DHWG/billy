@@ -1,8 +1,9 @@
 import logging
 import os
 import hashlib
+import time
 from google.cloud import texttospeech
-import playsound
+import pygame
 
 _log = logging.getLogger(__name__)
 
@@ -12,6 +13,9 @@ _voice = texttospeech.types.VoiceSelectionParams(language_code='en-US', name='en
 
 _audio_config = texttospeech.types.AudioConfig(
     audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+
+pygame.init()
+pygame.mixer.init()
 
 def say(text):
     """Synthesises and outputs the given text."""
@@ -24,4 +28,8 @@ def say(text):
         response = _client.synthesize_speech(synthesis_input, _voice, _audio_config)
         with open(file_name, 'wb') as out:
             out.write(response.audio_content)
-    playsound.playsound(file_name)
+
+    pygame.mixer.music.load(file_name)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
